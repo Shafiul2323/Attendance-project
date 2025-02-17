@@ -1,0 +1,1410 @@
+// Admin_Dashboard.jsp
+
+
+<html>
+    <body>
+        <center>
+            <%
+                String pa = (String) session.getAttribute("access");
+                if(pa != "Admin_Dashboard")
+                {
+                    response.sendRedirect("Login.html");
+                }
+                else
+                {
+                    out.print("Welcome");
+                }
+            %>
+            <h1>Admin Panel</h1>
+            <table>
+                <tr height="30" align="center">
+                    <td>
+                        <a href="Department.html"><button>Department</button></a>
+                        <a href="Program.html"><button>Program</button></a>
+                        <a href="Course.html"><button>Course</button></a>
+                    </td>
+                </tr>
+                <tr height="30" align="center">
+                    <td>
+                        <a href="Teacher.html"><button>Teacher</button></a>
+                        <a href="Student.html"><button>Student</button></a>
+                    </td>
+                </tr>
+                <tr height="30" align="center">
+                    <td><a href="Login.html"><button>Login</button></a></td>
+                </tr>
+            </table>
+        </center>
+    </body>
+</html>
+
+
+//Attendance.html
+
+
+
+<html>
+    <head>
+        <title>Attendance</title>
+    </head>
+    <body>
+        <center>
+            <h1>Attendance Information</h1>
+            <form action="Attendance.jsp" method="post">
+                <table>
+                    <tr height="30">
+                        <td>Student ID:</td>
+                        <td><input type="text" id="stuid" name="stuid"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Course ID:</td>
+                        <td><input type="text" id="cid" name="cid"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Teacher ID:</td>
+                        <td><input type="text" id="tid" name="tid"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Date Of Attendance:</td>
+                        <td><input type="text" id="adob" name="adob"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Semester:</td>
+                        <td><input type="text" id="semester" name="semester"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Present:</td>
+                        <td><input type="text" id="present" name="present"></td>
+                    </tr>
+                    <tr height="30">
+                        <td colspan="2" align="center">
+                            <input type="submit" value="Insert" name="InsertB">
+                            <input type="submit" value="Search" name="SearchB">
+                            <input type="submit" value="Update" name="UpdateB">
+                            <input type="submit" value="Delete" name="DeleteB">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <a href="Admin_Dashboard.jsp">
+                <button>Dashboard</button>
+            </a>
+        </center>
+    </body>
+</html>
+
+
+
+//Attendance.jsp
+
+
+
+<html>
+    <body>
+        <%@ page import = "java.sql.*" %>
+        <%
+            String stuid = request.getParameter("stuid");
+            String cid = request.getParameter("cid");
+            String tid = request.getParameter("tid");
+            String adob = request.getParameter("adob");
+            String semester = request.getParameter("semester");
+            String present = request.getParameter("present");
+
+            String btni = request.getParameter("InsertB");
+            String btns = request.getParameter("SearchB");
+            String btnu = request.getParameter("UpdateB");
+            String btnd = request.getParameter("DeleteB");
+
+            if(stuid == "") {stuid = "x";}
+            if(cid == "") {cid = "x";}
+            if(tid == "") {tid = "x";}
+            if(adob == "") {adob = "x";}
+            if(semester == "") {semester = "x";}
+            if(present == "") {present = "x";}
+
+            if(btni == null) {btni = "x";}
+            if(btns == null) {btns = "x";}
+            if(btnu == null) {btnu = "x";}
+            if(btnd == null) {btnd = "x";}
+
+            try
+            {
+                Class.forName("oracle.jdbc.driver.OracleDriver");
+                Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "Shafi2323");
+                if(btni.equals("Insert"))
+                {
+                    PreparedStatement ps = conn.prepareStatement("insert into Attendance values(?,?,?,?,?,?)");
+                    ps.setString(1, stuid);
+                    ps.setString(2, cid);
+                    ps.setString(3, tid);
+                    ps.setString(4, adob);
+                    ps.setString(5, semester);
+                    ps.setString(6, present);
+                    ps.executeQuery();
+                    out.print("Data Inserted Successfully");
+                }
+                else if((btns.equals("Search")) && (stuid.length() == 1) && (cid.length() == 1) && (tid.length() == 1) && (adob.length() == 1) && (semester.length() == 1) && (present.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Attendance");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(", ");
+                        out.print(rs.getString(4));
+                        out.print(", ");
+                        out.print(rs.getString(5));
+                        out.print(", ");
+                        out.print(rs.getString(6));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (stuid.length() > 1) && (cid.length() == 1) && (tid.length() == 1) && (adob.length() == 1) && (semester.length() == 1) && (present.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Attendance where Student_Id='" +stuid+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(", ");
+                        out.print(rs.getString(4));
+                        out.print(", ");
+                        out.print(rs.getString(5));
+                        out.print(", ");
+                        out.print(rs.getString(6));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (stuid.length() == 1) && (cid.length() > 1) && (tid.length() == 1) && (adob.length() == 1) && (semester.length() == 1) && (present.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Attendance where Code='" +cid+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(", ");
+                        out.print(rs.getString(4));
+                        out.print(", ");
+                        out.print(rs.getString(5));
+                        out.print(", ");
+                        out.print(rs.getString(6));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (stuid.length() == 1) && (cid.length() == 1) && (tid.length() > 1) && (adob.length() == 1) && (semester.length() == 1) && (present.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Attendance where Teacher_Id='" +tid+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(", ");
+                        out.print(rs.getString(4));
+                        out.print(", ");
+                        out.print(rs.getString(5));
+                        out.print(", ");
+                        out.print(rs.getString(6));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (stuid.length() == 1) && (cid.length() == 1) && (tid.length() == 1) && (adob.length() > 1) && (semester.length() == 1) && (present.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Attendance where Date_Of_Attendance='" +adob+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(", ");
+                        out.print(rs.getString(4));
+                        out.print(", ");
+                        out.print(rs.getString(5));
+                        out.print(", ");
+                        out.print(rs.getString(6));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (stuid.length() == 1) && (cid.length() == 1) && (tid.length() == 1) && (adob.length() == 1) && (semester.length() > 1) && (present.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Attendance where Semester='" +semester+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(", ");
+                        out.print(rs.getString(4));
+                        out.print(", ");
+                        out.print(rs.getString(5));
+                        out.print(", ");
+                        out.print(rs.getString(6));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (stuid.length() == 1) && (cid.length() == 1) && (tid.length() == 1) && (adob.length() == 1) && (semester.length() == 1) && (present.length() > 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Attendance where Present='" +present+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(", ");
+                        out.print(rs.getString(4));
+                        out.print(", ");
+                        out.print(rs.getString(5));
+                        out.print(", ");
+                        out.print(rs.getString(6));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btnu.equals("Update")) && (stuid.length() > 1))
+                {
+                    PreparedStatement ps = conn.prepareStatement("update Attendance set Present=? where Student_Id='" +stuid+ "'" + "and Code='" +cid+ "'" + "and Teacher_Id='" +tid+ "'" + "and Date_Of_Attendance='" +adob+ "'" + "and Semester='" +semester+ "'");
+                    ps.setString(1, present);
+                    ps.executeQuery();
+                    out.print("Data updated based on the Student ID");
+                }
+                else if((btnd.equals("Delete")) && (stuid.length() >= 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("delete from Attendance where Student_Id='" +stuid+ "'");
+                    out.print("Data deleted based on the Student ID");
+                }
+            }
+            catch(Exception e)
+            {
+                out.print(e);
+            }
+        %>
+        <br>
+        <br>
+        <a href="User_Dashboard.jsp">
+            <button>Visit Again</button>
+        </a>
+    </body>
+</html>
+
+
+//Course.html
+
+
+<html>
+    <head>
+        <title>Course</title>
+    </head>
+    <body>
+        <center>
+            <h1>Course Information</h1>
+            <form action="Course.jsp" method="post">
+                <table>
+                    <tr height="30">
+                        <td>Code:</td>
+                        <td><input type="text" id="cc" name="cc"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Title:</td>
+                        <td><input type="text" id="ct" name="ct"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Program ID:</td>
+                        <td><input type="text" id="proid" name="proid"></td>
+                    </tr>
+                    <tr height="30">
+                        <td colspan="2" align="center">
+                            <input type="submit" value="Insert" name="InsertB">
+                            <input type="submit" value="Search" name="SearchB">
+                            <input type="submit" value="Update" name="UpdateB">
+                            <input type="submit" value="Delete" name="DeleteB">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <a href="Admin_Dashboard.jsp">
+                <button>Dashboard</button>
+            </a>
+        </center>
+    </body>
+</html>
+
+
+//Course.jsp
+
+
+<html>
+    <body>
+        <%@ page import = "java.sql.*" %>
+        <%
+            String ccode = request.getParameter("cc");
+            String ctitle = request.getParameter("ct");
+            String pid = request.getParameter("proid");
+
+            String btni = request.getParameter("InsertB");
+            String btns = request.getParameter("SearchB");
+            String btnu = request.getParameter("UpdateB");
+            String btnd = request.getParameter("DeleteB");
+
+            if(ccode == "") {ccode = "x";}
+            if(ctitle == "") {ctitle = "x";}
+            if(pid == "") {pid = "x";}
+
+            if(btni == null) {btni = "x";}
+            if(btns == null) {btns = "x";}
+            if(btnu == null) {btnu = "x";}
+            if(btnd == null) {btnd = "x";}
+
+            try
+            {
+                Class.forName("oracle.jdbc.driver.OracleDriver");
+                Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "Shafi2323");
+                if(btni.equals("Insert"))
+                {
+                    PreparedStatement ps = conn.prepareStatement("insert into Course values(?,?,?)");
+                    ps.setString(1, ccode);
+                    ps.setString(2, ctitle);
+                    ps.setString(3, pid);
+                    ps.executeQuery();
+                    out.print("Data Inserted Successfully");
+                }
+                else if((btns.equals("Search")) && (ccode.length() == 1) && (ctitle.length() == 1) && (pid.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Course");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (ccode.length() > 1) && (ctitle.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Course where Code='" +ccode+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (ctitle.length() > 1) && (ccode.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Course where Title='" +ctitle+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (ccode.length() == 1) && (ctitle.length() == 1) && (pid.length() > 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Course where Program_Id ='" +pid+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (ccode.length() > 1) && (ctitle.length() > 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select *from Course where Code='" +ccode+ "'" + "and Title='" +ctitle+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btnu.equals("Update")) && (ccode.length() > 1) && (ctitle.length() > 1) && (pid.length() > 1))
+                {
+                    PreparedStatement ps = conn.prepareStatement("update Course set Title=?, Program_Id=? where Code='" +ccode+ "'");
+                    ps.setString(1, ctitle);
+                    ps.setString(2, pid);
+                    ps.executeQuery();
+                    out.print("Data updated based on the course code");
+                }
+                else if((btnd.equals("Delete")) && (ccode.length() >= 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("delete from Course where Code='" +ccode+ "'");
+                    out.print("Data deleted based on the course code");
+                }
+            }
+            catch(Exception e)
+            {
+                out.print(e);
+            }
+        %>
+        <br>
+        <br>
+        <a href="Course.html">
+            <button>Visit Again</button>
+        </a>
+    </body>
+</html>
+
+
+//Department.html
+
+
+<html>
+    <head>
+        <title>Department</title>
+    </head>
+    <body>
+        <center>
+            <h1>Department Information</h1>
+            <form action="Department.jsp" method="post">
+                <table>
+                    <tr height="30">
+                        <td>Department ID:</td>
+                        <td><input type="text" id="deptid" name="deptid"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Department Name:</td>
+                        <td><input type="text" id="deptname" name="deptname"></td>
+                    </tr>
+                    <tr height="30">
+                        <td colspan="2" align="center">
+                            <input type="submit" value="Insert" name="InsertB">
+                            <input type="submit" value="Search" name="SearchB">
+                            <input type="submit" value="Update" name="UpdateB">
+                            <input type="submit" value="Delete" name="DeleteB">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <a href="Admin_Dashboard.jsp">
+                <button>Dashboard</button>
+            </a>
+        </center>
+    </body>
+</html>
+
+
+//Department.jsp
+
+
+<html>
+    <body>
+        <%@ page import = "java.sql.*" %>
+        <%
+            String did = request.getParameter("deptid");
+            String dname = request.getParameter("deptname");
+
+            String btni = request.getParameter("InsertB");
+            String btns = request.getParameter("SearchB");
+            String btnu = request.getParameter("UpdateB");
+            String btnd = request.getParameter("DeleteB");
+
+            if(did == "") {did = "x";}
+            if(dname == "") {dname = "x";}
+
+            if(btni == null) {btni = "x";}
+            if(btns == null) {btns = "x";}
+            if(btnu == null) {btnu = "x";}
+            if(btnd == null) {btnd = "x";}
+
+            try
+            {
+                Class.forName("oracle.jdbc.driver.OracleDriver");
+                Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "Shafi2323");
+                if(btni.equals("Insert"))
+                {
+                    PreparedStatement ps = conn.prepareStatement("insert into Department values(?,?)");
+                    ps.setString(1, did);
+                    ps.setString(2, dname);
+                    ps.executeQuery();
+                    out.print("Data Inserted Successfully");
+                }
+                else if(btns.equals("Search") && did.length() == 1)
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Department");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (did.length() > 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Department where Dept_Id='" +did+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btnu.equals("Update")) && (did.length() > 1) && (dname.length() > 1))
+                {
+                    PreparedStatement ps = conn.prepareStatement("update Department set Dept_Name=? where Dept_Id='" +did+ "'");
+                    ps.setString(1, dname);
+                    ps.executeQuery();
+                    out.print("Data updated based on the Department ID");
+                }
+                else if((btnd.equals("Delete")) && (did.length() >= 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("delete from Department where Dept_Id='" +did+ "'");
+                    out.print("Data deleted based on the Department ID");
+                }
+            }
+            catch(Exception e)
+            {
+                out.print(e);
+            }
+        %>
+        <br>
+        <br>
+        <a href="Department.html">
+            <button>Visit Again</button>
+        </a>
+    </body>
+</html>
+
+
+//Login.html
+
+
+<html>
+    <head>
+        <title>Department</title>
+    </head>
+    <body>
+        <center>
+            <h1>Login</h1>
+            <form action="Login.jsp" method="post">
+                <table>
+                    <tr height="30">
+                        <td>User Name:</td>
+                        <td><input type="text" id="username" name="username"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Password:</td>
+                        <td><input type="password" id="password" name="password"></td>
+                    </tr>
+                    <tr height="30">
+                        <td colspan="2" align="center">
+                            <input type="submit" value="Login" name="LoginB">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <a href="Registration.html">
+                <button>Sign Up</button>
+            </a>
+        </center>
+    </body>
+</html>
+
+
+//Login.jsp
+
+
+<html>
+    <body>
+        <%@ page import = "java.sql.*" %>
+        <%
+            String uname = request.getParameter("username");
+            String pass = request.getParameter("password");
+            String blogin = request.getParameter("LoginB");
+            String vs ="";
+            session.setAttribute("access",vs);
+
+            try
+            {
+                Class.forName("oracle.jdbc.driver.OracleDriver");
+                Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "Shafi2323");
+
+                if((blogin.equals("Login")) && (uname.length() > 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select *from registration where username='" +uname+ "'" + "and password='" +pass+ "'");
+                    while(rs.next())
+                    {
+                        String check = rs.getString(1);
+                        if(check.equals("admin"))
+                        {
+                            vs ="Admin_Dashboard";
+                            session.setAttribute("access",vs);
+                            response.sendRedirect("Admin_Dashboard.jsp");
+                        }
+                        else
+                        {
+                            vs ="User_Dashboard";
+                            session.setAttribute("access",vs);
+                            response.sendRedirect("User_Dashboard.jsp");
+                        }
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                out.print(e);
+            }
+        %>
+        <br>
+        <br>
+        <a href="Login.html">
+            <button>Back</button>
+        </a>
+    </body>
+</html>
+
+
+//Program.html
+
+
+<html>
+    <head>
+        <title>Program</title>
+    </head>
+    <body>
+        <center>
+            <h1>Program Information</h1>
+            <form action="Program.jsp" method="post">
+                <table>
+                    <tr height="30">
+                        <td>Program ID:</td>
+                        <td><input type="text" id="proid" name="proid"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Program Name:</td>
+                        <td><input type="text" id="proname" name="proname"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Department ID:</td>
+                        <td><input type="text" id="deptid" name="deptid"></td>
+                    </tr>
+                    <tr height="30">
+                        <td colspan="2" align="center">
+                            <input type="submit" value="Insert" name="InsertB">
+                            <input type="submit" value="Search" name="SearchB">
+                            <input type="submit" value="Update" name="UpdateB">
+                            <input type="submit" value="Delete" name="DeleteB">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <a href="Admin_Dashboard.jsp">
+                <button>Dashboard</button>
+            </a>
+        </center>
+    </body>
+</html>
+
+
+// Program.jsp
+
+
+
+<html>
+    <body>
+        <%@ page import = "java.sql.*" %>
+        <%
+            String pid = request.getParameter("proid");
+            String pname = request.getParameter("proname");
+            String did = request.getParameter("deptid");
+
+            String btni = request.getParameter("InsertB");
+            String btns = request.getParameter("SearchB");
+            String btnu = request.getParameter("UpdateB");
+            String btnd = request.getParameter("DeleteB");
+
+            if(pid == "") {pid = "x";}
+            if(pname == "") {pname = "x";}
+            if(did == "") {did = "x";}
+
+            if(btni == null) {btni = "x";}
+            if(btns == null) {btns = "x";}
+            if(btnu == null) {btnu = "x";}
+            if(btnd == null) {btnd = "x";}
+
+            try
+            {
+                Class.forName("oracle.jdbc.driver.OracleDriver");
+                Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "Shafi2323");
+                if(btni.equals("Insert"))
+                {
+                    PreparedStatement ps = conn.prepareStatement("insert into Program values(?,?,?)");
+                    ps.setString(1, pid);
+                    ps.setString(2, pname);
+                    ps.setString(3, did);
+                    ps.executeQuery();
+                    out.print("Data Inserted Successfully");
+                }
+                else if((btns.equals("Search")) && (pid.length() == 1) && (pname.length() == 1) && (did.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Program");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (pid.length() > 1) && (pname.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Program where Program_Id='" +pid+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (pname.length() > 1) && (pid.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Program where Program_Name='" +pname+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (pid.length() == 1) && (pname.length() == 1) && (did.length() > 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Program where Dept_Id='" +did+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (pid.length() > 1) && (pname.length() > 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select *from program where Program_Id='" +pid+ "'" + "and Program_Name='" +pname+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btnu.equals("Update")) && (pid.length() > 1) && (pname.length() > 1) && (did.length() > 1))
+                {
+                    PreparedStatement ps = conn.prepareStatement("update Program set Program_Name=?, Dept_Id=? where Program_Id='" +pid+ "'");
+                    ps.setString(1, pname);
+                    ps.setString(2, did);
+                    ps.executeQuery();
+                    out.print("Data updated based on the Program ID");
+                }
+                else if((btnd.equals("Delete")) && (pid.length() >= 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("delete from Program where Program_Id='" +pid+ "'");
+                    out.print("Data deleted based on the Program ID");
+                }
+            }
+            catch(Exception e)
+            {
+                out.print(e);
+            }
+        %>
+        <br>
+        <br>
+        <a href="Program.html">
+            <button>Visit Again</button>
+        </a>
+    </body>
+</html>
+
+
+//Registrationt.html
+
+
+<html>
+    <head>
+        <title>Department</title>
+    </head>
+    <body>
+        <center>
+            <h1>Registration System</h1>
+            <form action="Registration.jsp" method="post">
+                <table>
+                    <tr height="30">
+                        <td>Name:</td>
+                        <td><input type="text" id="fullname" name="fullname"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>User Name:</td>
+                        <td><input type="text" id="username" name="username"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Password:</td>
+                        <td><input type="password" id="password" name="password"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Department:</td>
+                        <td><input type="text" id="deptid" name="deptid"></td>
+                    </tr>
+                    <tr height="30">
+                        <td colspan="2" align="center">
+                            <input type="submit" value="Sign Up" name="singupB">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <a href="Login.html">
+                <button>Login</button>
+            </a>
+        </center>
+    </body>
+</html>
+
+
+//Registration.jsp
+
+
+<html>
+    <body>
+        <%@ page import = "java.sql.*" %>
+        <%
+            String rfname = request.getParameter("fullname");
+            String runame = request.getParameter("username");
+            String rpass = request.getParameter("password");
+            String rdeptid = request.getParameter("deptid");
+            String rsignup = request.getParameter("singupB");
+
+            try
+            {
+                Class.forName("oracle.jdbc.driver.OracleDriver");
+                Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "Shafi2323");
+                if(rsignup.equals("Sign Up"))
+                {
+                    PreparedStatement ps = conn.prepareStatement("insert into Registration values(?,?,?,?)");
+                    ps.setString(1, runame);
+                    ps.setString(2, rpass);
+                    ps.setString(3, rfname);
+                    ps.setString(4, rdeptid);
+                    ps.executeQuery();
+                    out.print("Registration Completed");
+                }
+            }
+            catch(Exception e)
+            {
+                out.print(e);
+            }
+        %>
+        <br>
+        <br>
+        <a href="Registration.html">
+            <button>Back</button>
+        </a>
+    </body>
+</html>
+
+
+
+//Student.html
+
+
+
+<html>
+    <head>
+        <title>Student</title>
+    </head>
+    <body>
+        <center>
+            <h1>Student Information</h1>
+            <form action="Student.jsp" method="post">
+                <table>
+                    <tr height="30">
+                        <td>Student ID:</td>
+                        <td><input type="text" id="stuid" name="stuid"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Student Name:</td>
+                        <td><input type="text" id="stuname" name="stuname"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Date Of Birth:</td>
+                        <td><input type="text" id="studob" name="studob"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Program ID:</td>
+                        <td><input type="text" id="pid" name="pid"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Cell NO:</td>
+                        <td><input type="text" id="cellno" name="cellno"></td>
+                    </tr>
+                    <tr height="30">
+                        <td colspan="2" align="center">
+                            <input type="submit" value="Insert" name="InsertB">
+                            <input type="submit" value="Search" name="SearchB">
+                            <input type="submit" value="Update" name="UpdateB">
+                            <input type="submit" value="Delete" name="DeleteB">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <a href="Admin_Dashboard.jsp">
+                <button>Dashboard</button>
+            </a>
+        </center>
+    </body>
+</html>
+
+
+//Student.jsp
+
+
+<html>
+    <body>
+        <%@ page import = "java.sql.*" %>
+        <%
+            String stuid = request.getParameter("stuid");
+            String stuname = request.getParameter("stuname");
+            String studob = request.getParameter("studob");
+            String pid = request.getParameter("pid");
+            String cellno = request.getParameter("cellno");
+
+            String btni = request.getParameter("InsertB");
+            String btns = request.getParameter("SearchB");
+            String btnu = request.getParameter("UpdateB");
+            String btnd = request.getParameter("DeleteB");
+
+            if(stuid == "") {stuid = "x";}
+            if(stuname == "") {stuname = "x";}
+            if(studob == "") {studob = "x";}
+            if(pid == "") {pid = "x";}
+            if(cellno == "") {cellno = "x";}
+
+            if(btni == null) {btni = "x";}
+            if(btns == null) {btns = "x";}
+            if(btnu == null) {btnu = "x";}
+            if(btnd == null) {btnd = "x";}
+
+            try
+            {
+                Class.forName("oracle.jdbc.driver.OracleDriver");
+                Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "Shafi2323");
+                if(btni.equals("Insert"))
+                {
+                    PreparedStatement ps = conn.prepareStatement("insert into Student values(?,?,?,?,?)");
+                    ps.setString(1, stuid);
+                    ps.setString(2, stuname);
+                    ps.setString(3, pid);
+                    ps.setString(4, studob);
+                    ps.setString(5, cellno);
+                    ps.executeQuery();
+                    out.print("Data Inserted Successfully");
+                }
+                else if((btns.equals("Search")) && (stuid.length() == 1) && (stuname.length() == 1) && (studob.length() == 1) && (pid.length() == 1) && (cellno.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Student");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(", ");
+                        out.print(rs.getString(4));
+                        out.print(", ");
+                        out.print(rs.getString(5));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (stuid.length() > 1) && (stuname.length() == 1) && (studob.length() == 1) && (pid.length() == 1) && (cellno.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Student where Student_Id='" +stuid+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(", ");
+                        out.print(rs.getString(4));
+                        out.print(", ");
+                        out.print(rs.getString(5));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (stuid.length() == 1) && (stuname.length() > 1) && (studob.length() == 1) && (pid.length() == 1) && (cellno.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Student where Student_Name='" +stuname+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(", ");
+                        out.print(rs.getString(4));
+                        out.print(", ");
+                        out.print(rs.getString(5));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (stuid.length() == 1) && (stuname.length() == 1) && (studob.length() == 1) && (pid.length() > 1) && (cellno.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Student where Program_Id='" +pid+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(", ");
+                        out.print(rs.getString(4));
+                        out.print(", ");
+                        out.print(rs.getString(5));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (stuid.length() == 1) && (stuname.length() == 1) && (studob.length() == 1) && (pid.length() == 1) && (cellno.length() > 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Student where Cell_NO='" +cellno+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(", ");
+                        out.print(rs.getString(4));
+                        out.print(", ");
+                        out.print(rs.getString(5));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btnu.equals("Update")) && (stuid.length() > 1) && (stuname.length() > 1) && (studob.length() > 1) && (pid.length() > 1) && (cellno.length() > 1))
+                {
+                    PreparedStatement ps = conn.prepareStatement("update Student set Student_Name=?, Program_Id=?, Date_Of_Birth=?, Cell_NO=? where Student_Id='" +stuid+ "'");
+                    ps.setString(1, stuname);
+                    ps.setString(2, pid);
+                    ps.setString(3, studob);
+                    ps.setString(4, cellno);
+                    ps.executeQuery();
+                    out.print("Data updated based on the Student ID");
+                }
+                else if((btnd.equals("Delete")) && (stuid.length() >= 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("delete from Student where Student_Id='" +stuid+ "'");
+                    out.print("Data deleted based on the Student ID");
+                }
+            }
+            catch(Exception e)
+            {
+                out.print(e);
+            }
+        %>
+        <br>
+        <br>
+        <a href="Student.html">
+            <button>Visit Again</button>
+        </a>
+    </body>
+</html>
+
+
+//Teacher.html
+
+
+
+<html>
+    <head>
+        <title>Teacher</title>
+    </head>
+    <body>
+        <center>
+            <h1>Teacher Information</h1>
+            <form action="Teacher.jsp" method="post">
+                <table>
+                    <tr height="30">
+                        <td>Teacher ID:</td>
+                        <td><input type="text" id="tid" name="tid"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Teacher Name:</td>
+                        <td><input type="text" id="tname" name="tname"></td>
+                    </tr>
+                    <tr height="30">
+                        <td>Department ID:</td>
+                        <td><input type="text" id="deptid" name="deptid"></td>
+                    </tr>
+                    <tr height="30">
+                        <td colspan="2" align="center">
+                            <input type="submit" value="Insert" name="InsertB">
+                            <input type="submit" value="Search" name="SearchB">
+                            <input type="submit" value="Update" name="UpdateB">
+                            <input type="submit" value="Delete" name="DeleteB">
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <a href="Admin_Dashboard.jsp">
+                <button>Dashboard</button>
+            </a>
+        </center>
+    </body>
+</html>
+
+
+// Teacher.jsp
+
+
+
+<html>
+    <body>
+        <%@ page import = "java.sql.*" %>
+        <%
+            String tid = request.getParameter("tid");
+            String tname = request.getParameter("tname");
+            String did = request.getParameter("deptid");
+
+            String btni = request.getParameter("InsertB");
+            String btns = request.getParameter("SearchB");
+            String btnu = request.getParameter("UpdateB");
+            String btnd = request.getParameter("DeleteB");
+
+            if(tid == "") {tid = "x";}
+            if(tname == "") {tname = "x";}
+            if(did == "") {did = "x";}
+
+            if(btni == null) {btni = "x";}
+            if(btns == null) {btns = "x";}
+            if(btnu == null) {btnu = "x";}
+            if(btnd == null) {btnd = "x";}
+
+            try
+            {
+                Class.forName("oracle.jdbc.driver.OracleDriver");
+                Connection conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "system", "Shafi2323");
+                if(btni.equals("Insert"))
+                {
+                    PreparedStatement ps = conn.prepareStatement("insert into Teacher values(?,?,?)");
+                    ps.setString(1, tid);
+                    ps.setString(2, tname);
+                    ps.setString(3, did);
+                    ps.executeQuery();
+                    out.print("Data Inserted Successfully");
+                }
+                else if((btns.equals("Search")) && (tid.length() == 1) && (tname.length() == 1) && (did.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Teacher");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (tid.length() > 1) && (tname.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Teacher where Teacher_Id ='" +tid+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (tname.length() > 1) && (tid.length() == 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Teacher where Teacher_Name='" +tname+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (tid.length() == 1) && (tname.length() == 1) && (did.length() > 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select * from Teacher where Dept_Id='" +did+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btns.equals("Search")) && (tid.length() > 1) && (tname.length() > 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("select *from Teacher where Teacher_Id ='" +tid+ "'" + "and Teacher_Name='" +tname+ "'");
+                    while(rs.next())
+                    {
+                        out.print(rs.getString(1));
+                        out.print(", ");
+                        out.print(rs.getString(2));
+                        out.print(", ");
+                        out.print(rs.getString(3));
+                        out.print(" <br> ");
+                    }
+                }
+                else if((btnu.equals("Update")) && (tid.length() > 1) && (tname.length() > 1) && (did.length() > 1))
+                {
+                    PreparedStatement ps = conn.prepareStatement("update Teacher set Teacher_Name=?, Dept_Id=? where Teacher_Id ='" +tid+ "'");
+                    ps.setString(1, tname);
+                    ps.setString(2, did);
+                    ps.executeQuery();
+                    out.print("Data updated based on the Teacher Id");
+                }
+                else if((btnd.equals("Delete")) && (tid.length() >= 1))
+                {
+                    Statement st = conn.createStatement();
+                    ResultSet rs = st.executeQuery("delete from Teacher where Teacher_Id ='" +tid+ "'");
+                    out.print("Data deleted based on the Teacher Id");
+                }
+            }
+            catch(Exception e)
+            {
+                out.print(e);
+            }
+        %>
+        <br>
+        <br>
+        <a href="Teacher.html">
+            <button>Visit Again</button>
+        </a>
+    </body>
+</html>
+
+
+
+//User_Dashboard.jsp
+
+
+
+<html>
+    <body>
+        <center>
+            <%
+                String pa = (String) session.getAttribute("access");
+                if(pa != "User_Dashboard")
+                {
+                    response.sendRedirect("Login.html");
+                }
+                else
+                {
+                    out.print("Welcome");
+                }
+            %>
+            <h1>User Panel</h1>
+            <table>
+                <tr height="30">
+                    <td><a href="Attendance.html"><button>Daily Attendance</button></a></td>
+                </tr>
+                <tr height="30" align="center">
+                    <td><a href="Report.html"><button>Report</button></a></td>
+                </tr>
+                <tr height="30" align="center">
+                    <td><a href="Login.html"><button>Login</button></a></td>
+                </tr>
+            </table>
+        </center>
+    </body>
+</html>
+
+
+
+
+
+
+
